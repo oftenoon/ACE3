@@ -18,34 +18,17 @@
  * Public: Yes
  */
 
+ACE_DEPRECATED(QFUNC(setAimCoef),"3.13.0","ACE_setCustomAimCoef and arithmeticSetSource");
+if (true) exitWith {};
+
 params ["_unit", "_id", "_setting", ["_add", true]];
 
-private _exists = false;
-private _highestCoef = 1;
-private _map = _unit getVariable [QGVAR(setAimCoefMap), []];
-
-_map = _map select {
-    _x params ["_xID", "_xSetting"];
-    if (_id == _xID) then {
-        _exists = true;
-        if (_add) then {
-            _x set [1, _setting];
-            _highestCoef = _highestCoef max _setting;
-            true
-        } else {
-            false
-        };
-    } else {
-        _highestCoef = _highestCoef max _xSetting;
-        true
-    };
+if (_add) then {
+    private _settingCode = compile str _setting;
+    [missionNamespace, "ACE_setCustomAimCoef", _id, _settingCode] call FUNC(arithmeticSetSource);
+} else {
+    [missionNamespace, "ACE_setCustomAimCoef", _id, {}] call FUNC(arithmeticSetSource);
 };
 
-if (!_exists && _add) then {
-    _highestCoef = _highestCoef max _setting;
-    _map pushBack [_id, _setting];
-};
-
-// Update the value
-_unit setVariable [QGVAR(setAimCoefMap), _map];
-_unit setCustomAimCoef _highestCoef;
+private _aimCoef = [missionNamespace, "ACE_setCustomAimCoef", "max"] call EFUNC(common,arithmeticGetResult);
+_unit setCustomAimCoef _aimCoef;
