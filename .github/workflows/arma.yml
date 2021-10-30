@@ -3,7 +3,7 @@ name: Arma
 on:
   push:
     branches:
-    - master
+    - custom
   pull_request:
 
 jobs:
