@@ -1,2 +1,0 @@
-PREP(initEjectAction);
-PREP(canShowEject);
